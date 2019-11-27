@@ -84,10 +84,11 @@ def GetRawDoubles():
         for row in records:
             dbl = DoubleFile(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
             if dbl.hash in RawDoubles.keys(): 
-                RawDoubles[dbl.hash] = dblst.append(dbl)
+                RawDoubles[dbl.hash].append(dbl)
             else:
                 dblst = list()
-                RawDoubles[dbl.hash] = dblst.append(dbl)
+                RawDoubles[dbl.hash] = dblst
+                RawDoubles[dbl.hash].append(dbl)
         
         return RawDoubles
 
