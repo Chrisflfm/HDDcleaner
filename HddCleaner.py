@@ -1,3 +1,27 @@
+class DoubleFile:
+      
+    def __init__(self, id, fullName, dirname, basename, st_mode, st_mtime, st_size, st_atime, hash, onDisk):
+        self.id = id
+        self.fullName = fullName
+        self.dirname = dirname
+        self.basename = basename
+        self.st_mode = st_mode
+        self.st_mtime = st_mtime
+        self.st_size = st_size
+        self.ist_atimed = st_atime
+        self.hash = hash
+        self.onDisk = onDisk
+        self.rootFolder = dirname[:dirname.find("\\", 4)]
+
+
+class RootFolder:
+      
+    def __init__(self, category_id, rootFolders, ChangeOk):
+        self.category_id = category_id
+        self.rootFolders = rootFolders
+        self.ChangeOk = ChangeOk
+
+
 import glob
 import os
 from datetime import datetime
@@ -31,7 +55,6 @@ def getConnection():
             return connection
         else:
             print("No connection!")
-            errorHandler()
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -57,11 +80,31 @@ def GetRawDoubles():
         cursor = con.cursor()
         cursor.execute(sql_select_Query)
         records = cursor.fetchall()
-        RawDoubles = list()
+        RawDoubles = dict()
         for row in records:
-            dbl = DoubleFile(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
-            RawDoubles.append(dbl)
+            dbl = DoubleFile(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+            if dbl.hash in RawDoubles.keys(): 
+                RawDoubles[dbl.hash] = dblst.append(dbl)
+            else:
+                dblst = list()
+                RawDoubles[dbl.hash] = dblst.append(dbl)
+        
         return RawDoubles
+
+def GetRootFolders():
+    con = getConnection()
+    if con.is_connected():
+        cursor = con.cursor()
+        sql_select_Query = (
+            "SELECT * FROM cd_test.rootfolders")
+        cursor = con.cursor()
+        cursor.execute(sql_select_Query)
+        records = cursor.fetchall()
+        rootFolders = dict()
+        for row in records:
+            rf = RootFolder(row[0], row[1], row[2])
+            rootFolders[rf.rootFolders] = rf
+        return rootFolders
 
 # ##############################################################
 # Initializing                                                 #
@@ -70,19 +113,10 @@ def GetRawDoubles():
 os.system('cls' if os.name == 'nt' else 'clear')
 
 # report("*******************************************************", False)
-print("Cleaner V0.1 started")
+print("Cleaner V0.1 started, getting raw data")
 rawDoubles = GetRawDoubles()
+print("Get root folder list")
+rootFolders = GetRootFolders()
 print("Processing ended")
 
 
-class DoubleFile:
-    def __init__(self, id, fullName, dirname, basename, st_mode, st_mtime, st_size, st_atime, hash):
-        self.id = id
-        self.fullName = fullName
-        self.dirname = dirname
-        self.basename = basename
-        self.st_mode = st_mode
-        self.st_mtime = st_mtime
-        self.st_size = st_size
-        self.ist_atimed = st_atime
-        self.hash = hash
