@@ -140,12 +140,15 @@ for key in rawDoubles:
         if x.rootdepth < highRootCount:
             FileCounter = FileCounter + 1
             Bytes = Bytes + x.st_size
-            if rootFolders[x.rootFolder].ChangeOk == 1:
-                if os.path.exists(x.fullName):
-                    try:
-                        os.remove(x.fullName) 
-                    except:
-                        pass
+            try:
+                if rootFolders[x.rootFolder].ChangeOk == 1:
+                    if os.path.exists(x.fullName):
+                        try:
+                            os.remove(x.fullName) 
+                        except:
+                            pass
+            except:
+                    pass
                 UpdateFile(x.id)
 print("Processing ended")
 print(str(FileCounter) + " removed")
