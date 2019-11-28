@@ -142,7 +142,10 @@ for key in rawDoubles:
             Bytes = Bytes + x.st_size
             if rootFolders[x.rootFolder].ChangeOk == 1:
                 if os.path.exists(x.fullName):
-                    os.remove(x.fullName) 
+                    try:
+                        os.remove(x.fullName) 
+                    except expression as identifier:
+                        pass
                 UpdateFile(x.id)
 print("Processing ended")
 print(str(FileCounter) + " removed")
