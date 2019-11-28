@@ -74,10 +74,10 @@ def closeConnection(connection):
 def UpdateFile(id):
     con = getConnection()
     if con.is_connected():
-        mycursor = mydb.cursor()
+        cursor = con.cursor()
         sql = "UPDATE cd_test.tblfile SET onDisk = '0' WHERE id = " + str(id)
         mycursor.execute(sql)
-        mydb.commit()
+        con.commit()
         if mycursor.rowcount >0:
             return True
 
