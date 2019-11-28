@@ -144,7 +144,7 @@ for key in rawDoubles:
                 if os.path.exists(x.fullName):
                     try:
                         os.remove(x.fullName) 
-                    except expression as identifier:
+                    except:
                         pass
                 UpdateFile(x.id)
 print("Processing ended")
