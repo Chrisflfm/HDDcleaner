@@ -12,6 +12,7 @@ class DoubleFile:
         self.hash = hash
         self.onDisk = onDisk
         self.rootFolder = dirname[:dirname.find("\\", 4)]
+        self.rootdepth = fullName.count("\\")
 
 
 class RootFolder:
@@ -70,13 +71,22 @@ def closeConnection(connection):
     except Exception as e:
         errorHandler(e)
 
+def UpdateFile(id):
+    con = getConnection()
+    if con.is_connected():
+        mycursor = mydb.cursor()
+        sql = "UPDATE cd_test.tblfile SET onDisk = '0' WHERE id = " + str(id)
+        mycursor.execute(sql)
+        mydb.commit()
+        if mycursor.rowcount >0:
+            return True
 
 def GetRawDoubles():
     con = getConnection()
     if con.is_connected():
         cursor = con.cursor()
         sql_select_Query = (
-            "SELECT  a.* FROM cd_test.tblfile a JOIN (SELECT hash, COUNT(*) FROM cd_test.tblfile GROUP BY hash HAVING count(*) > 1 ) b ON a.hash = b.hash ORDER BY a.hash")
+            "SELECT a.* FROM cd_test.tblfile a JOIN (SELECT hash, COUNT(*) FROM cd_test.tblfile GROUP BY hash HAVING count(*) > 1 ) b ON a.hash = b.hash ORDER BY a.hash")
         cursor = con.cursor()
         cursor.execute(sql_select_Query)
         records = cursor.fetchall()
@@ -104,7 +114,7 @@ def GetRootFolders():
         rootFolders = dict()
         for row in records:
             rf = RootFolder(row[0], row[1], row[2])
-            rootFolders[rf.rootFolders] = rf
+            rootFolders[rf.rootFolders[0:-1]] = rf
         return rootFolders
 
 # ##############################################################
@@ -118,6 +128,24 @@ print("Cleaner V0.1 started, getting raw data")
 rawDoubles = GetRawDoubles()
 print("Get root folder list")
 rootFolders = GetRootFolders()
+print("Processing")
+FileCounter = 0
+Bytes = 0
+for key in rawDoubles:
+    highRootCount = 0
+    for x in rawDoubles[key]:
+        if x.rootdepth > highRootCount:
+            highRootCount = x.rootdepth
+    for x in rawDoubles[key]:
+        if x.rootdepth < highRootCount:
+            FileCounter = FileCounter + 1
+            Bytes = Bytes + x.st_size
+            if rootFolders[x.rootFolder].ChangeOk == 1:
+                if os.path.exists(x.fullName):
+                    os.remove(x.fullName) 
+                UpdateFile(x.id)
 print("Processing ended")
+print(str(FileCounter) + " removed")
+print(str(Bytes) + " bytes removed")
 
 
