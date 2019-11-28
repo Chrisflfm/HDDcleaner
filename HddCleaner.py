@@ -148,7 +148,7 @@ for key in rawDoubles:
                         except:
                             pass
             except:
-                    pass
+                pass
                 UpdateFile(x.id)
 print("Processing ended")
 print(str(FileCounter) + " removed")
