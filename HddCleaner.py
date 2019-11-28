@@ -76,9 +76,9 @@ def UpdateFile(id):
     if con.is_connected():
         cursor = con.cursor()
         sql = "UPDATE cd_test.tblfile SET onDisk = '0' WHERE id = " + str(id)
-        mycursor.execute(sql)
+        cursor.execute(sql)
         con.commit()
-        if mycursor.rowcount >0:
+        if cursor.rowcount >0:
             return True
 
 def GetRawDoubles():
