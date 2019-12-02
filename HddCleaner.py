@@ -139,7 +139,7 @@ for key in rawDoubles:
             highRootCount = x.rootdepth
             HighRootTile = x.basename
     for x in rawDoubles[key]:
-        if (x.rootdepth < highRootCount) or ((x.rootdepth == highRootCount) and HighRootTile <> x.basename):
+        if (x.rootdepth < highRootCount) or ((x.rootdepth == highRootCount) and HighRootTile != x.basename):
             FileCounter = FileCounter + 1
             Bytes = Bytes + x.st_size
             try:
